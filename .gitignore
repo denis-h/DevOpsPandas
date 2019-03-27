@@ -3,3 +3,6 @@
 
 # Ada Library Information
 *.ali
+
+# Ignore the  Maven's "fourre-tout"
+target/
