@@ -15,7 +15,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <!-- <plugins>
+    <build>
+    <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -27,5 +28,6 @@
                 </includes>
             </configuration>
         </plugin>
-    </plugins> -->
+    </plugins>
+</build>
 </project>
