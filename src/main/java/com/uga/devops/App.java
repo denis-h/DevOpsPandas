@@ -72,8 +72,5 @@ public class App {
         System.out.println();
         System.out.println();
         frame3.affichage();
-
-        System.out.println("Average : " + frame.loc("A").average());
-        System.out.println("Sum : " + frame.loc("A").sum());
     }
 }
