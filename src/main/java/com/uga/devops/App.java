@@ -1,30 +1,40 @@
 package com.uga.devops;
 
 import java.util.ArrayList;
+import java.io.File;
 
 public class App {
     public static void main(String[] args) {
         ArrayList<Column> columns = new ArrayList<>();
 
         ArrayList<Object> list = new ArrayList<Object>();
-        list.add(1);
-        list.add(2);
+        list.add(1.4f);
+        list.add(2.7f);
         list.add(null);
-        list.add(4);
-        list.add(5);
+        list.add(4.2f);
+        list.add(5.1f);
 
         columns.add(new Column("A", list));
 
 
         ArrayList list2 = new ArrayList();
-        list2.add("yo 1");
-        list2.add("yo 2");
-        list2.add("yo 3");
-        list2.add("yo 4");
-        list2.add("yo 16");
+        list2.add("a");
+        list2.add("b");
+        list2.add("null");
+        list2.add("dd");
+        list2.add("e");
 
         columns.add(new Column("B", list2));
 
+
+        ArrayList<Object> list3 = new ArrayList<Object>();
+        list3.add(1);
+        list3.add(2);
+        list3.add(null);
+        list3.add(4);
+        list3.add(5);
+
+        columns.add(new Column("C", list3));
 
         DataFrame frame = new DataFrame(columns);
         frame.affichage();
@@ -35,5 +45,24 @@ public class App {
         System.out.println();
         frame.affichageFin(3);
 
+        DataFrame frame2 = new DataFrame("/home/dadmin/Documents/M1/S8/DevOps/DevOpsPandas/test.csv");
+        System.out.println();
+        System.out.println();
+        frame2.affichage();
+        System.out.println(columns.get(1).getType());
+
+        DataFrame frame3 = frame2.iloc(1);
+
+        System.out.println();
+        System.out.println();
+        frame3.affichage();
+
+        frame3 = frame2.loc("Model");
+
+        System.out.println();
+        System.out.println();
+        frame3.affichage();
+
+        System.out.println("Average : " + frame.loc("A").columns.get(0).average());
     }
 }
