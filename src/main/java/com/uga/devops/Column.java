@@ -8,11 +8,11 @@ import java.util.Objects;
 
 public class Column {
 
-    enum Type {NULL, INT, FLOAT, STRING}
+    enum Type {NULL, INT, FLOAT, STRING, EMPTY}
 
     private String label;
     private ArrayList<Object> values;
-    private int columnSize = 0;
+    private int columnSize;
     private Type type;
 
     public Column(String label, ArrayList<Object> values) {
@@ -39,16 +39,19 @@ public class Column {
     }
 
     public Type extractType(ArrayList<Object> values) {
-        if ((values != null) && (values.size() > 1)) {
-            if (values.get(0) instanceof Integer) {
-                return Type.INT;
-            } else if (values.get(0) instanceof String) {
-                return Type.STRING;
-            } else if (values.get(0) instanceof Float) {
-                return Type.FLOAT;
+        if (values != null) {
+            if (values.size() >= 1) {
+                if (values.get(0) instanceof Integer) {
+                    return Type.INT;
+                } else if (values.get(0) instanceof String) {
+                    return Type.STRING;
+                } else if (values.get(0) instanceof Float) {
+                    return Type.FLOAT;
+                }
+            } else {
+                return Type.EMPTY;
             }
         }
-
         return Type.NULL;
     }
 
@@ -75,61 +78,60 @@ public class Column {
         Object result = null;
         switch (this.getType()) {
             case INT:
-            List<Integer> integers = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                integers.add((object == null ? 0 : (Integer)object));
-            }
-            result = Collections.max(integers);
-            break;
+                List<Integer> integers = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    integers.add((object == null ? 0 : (Integer) object));
+                }
+                result = Collections.max(integers);
+                break;
             case FLOAT:
-            List<Float> floats = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                floats.add((object == null ? 0.0f : (Float)object));
-            }
-            result = Collections.max(floats);
-            break;
+                List<Float> floats = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    floats.add((object == null ? 0.0f : (Float) object));
+                }
+                result = Collections.max(floats);
+                break;
             case STRING:
-            List<String> strings = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                strings.add((object == null ? "" : Objects.toString(object, null)));
-            }
-            result = Collections.max(strings);
-            break;
-            default :
-            result = null;
+                List<String> strings = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    strings.add((object == null ? "" : Objects.toString(object, null)));
+                }
+                result = Collections.max(strings);
+                break;
+            default:
+                result = null;
         }
 
         return result;
     }
 
     public Object min() {
-        Object result = null;
+        Object result;
         switch (this.getType()) {
             case INT:
-            List<Integer> integers = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                integers.add((object == null ? 0 : (Integer)object));
-            }
-            result = Collections.min(integers);
-            break;
+                List<Integer> integers = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    integers.add((object == null ? 0 : (Integer) object));
+                }
+                result = Collections.min(integers);
+                break;
             case FLOAT:
-            List<Float> floats = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                floats.add((object == null ? 0.0f : (Float)object));
-            }
-            result = Collections.min(floats);
-            break;
+                List<Float> floats = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    floats.add((object == null ? 0.0f : (Float) object));
+                }
+                result = Collections.min(floats);
+                break;
             case STRING:
-            List<String> strings = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                strings.add((object == null ? "" : Objects.toString(object, null)));
-            }
-            result = Collections.min(strings);
-            break;
-            default :
-            result = null;
+                List<String> strings = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    strings.add((object == null ? "" : Objects.toString(object, null)));
+                }
+                result = Collections.min(strings);
+                break;
+            default:
+                result = null;
         }
-
         return result;
     }
 
@@ -137,29 +139,29 @@ public class Column {
         float result = 0.0f;
         switch (this.getType()) {
             case INT:
-            List<Integer> integers = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                integers.add((object == null ? 0 : (Integer)object));
-            }
+                List<Integer> integers = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    integers.add((object == null ? 0 : (Integer) object));
+                }
 
-            for (Integer integer : integers) {
-                result += integer;
-            }
+                for (Integer integer : integers) {
+                    result += integer;
+                }
 
-            result = result / this.columnSize;
-            break;
+                result = result / this.columnSize;
+                break;
             case FLOAT:
-            List<Float> floats = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                floats.add((object == null ? 0.0f : (Float)object));
-            }
+                List<Float> floats = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    floats.add((object == null ? 0.0f : (Float) object));
+                }
 
-            for (Float f : floats) {
-                result += f;
-            }
+                for (Float f : floats) {
+                    result += f;
+                }
 
-            result = result / this.columnSize;
-            break;
+                result = result / this.columnSize;
+                break;
         }
 
         return result;
@@ -169,29 +171,29 @@ public class Column {
         Object result = null;
         switch (this.getType()) {
             case INT:
-            List<Integer> integers = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                integers.add((object == null ? 0 : (Integer)object));
-            }
+                List<Integer> integers = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    integers.add((object == null ? 0 : (Integer) object));
+                }
 
-            int sumInt = 0;
-            for (Integer integer : integers) {
-                sumInt += integer;
-            }
-            result = sumInt;
-            break;
+                int sumInt = 0;
+                for (Integer integer : integers) {
+                    sumInt += integer;
+                }
+                result = sumInt;
+                break;
             case FLOAT:
-            List<Float> floats = new ArrayList<>(this.columnSize);
-            for (Object object : this.getValues()) {
-                floats.add((object == null ? 0.0f : (Float)object));
-            }
+                List<Float> floats = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    floats.add((object == null ? 0.0f : (Float) object));
+                }
 
-            float sumFloat = 0.0f;
-            for (Float f : floats) {
-                sumFloat += f;
-            }
-            result = sumFloat;
-            break;
+                float sumFloat = 0.0f;
+                for (Float f : floats) {
+                    sumFloat += f;
+                }
+                result = sumFloat;
+                break;
         }
 
         return result;

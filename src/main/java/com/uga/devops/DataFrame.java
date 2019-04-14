@@ -1,15 +1,13 @@
 package com.uga.devops;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
 public class DataFrame {
 
-    ArrayList<Column> columns = new ArrayList<>();
+    private ArrayList<Column> columns = new ArrayList<>();
 
     public DataFrame(ArrayList<Column> data) {
         columns = data;
@@ -38,18 +36,15 @@ public class DataFrame {
         }
     }
 
-    public void affichage() {
+    public String affichage() {
         int maxLines = maxColumnLines();
-
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
         for (Column column : columns) {
             builder.append(column.getLabel()).append("\t");
         }
-        System.out.println(builder.toString());
-
+        builder.append("\n");
         for (int i = 0; i < maxLines; i++) {
-            builder = new StringBuilder();
             builder.append(i).append("\t");
             for (int j = 0; j < columns.size(); j++) {
                 if (i < columns.get(j).getColumnSize()) {
@@ -62,8 +57,9 @@ public class DataFrame {
                     builder.append(" \t");
                 }
             }
-            System.out.println(builder.toString());
+            builder.append("\n");
         }
+        return builder.toString();
     }
 
     public void affichageDebut(int nb_lines) {
@@ -177,5 +173,9 @@ public class DataFrame {
             }
         }
         return maxLines;
+    }
+
+    public ArrayList<Column> getColumns() {
+        return columns;
     }
 }
