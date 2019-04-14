@@ -134,10 +134,33 @@ public class DataFrame {
         return new DataFrame(result);
     }
 
-    public DataFrame loc(String label) {
+    public DataFrame iloc(ArrayList<Integer> pos) {
         ArrayList<Column> result = new ArrayList<>();
+            for (Column column : columns) {
+                ArrayList<Object> values = new ArrayList<>();
+                for (Integer p : pos) {
+                    values.add(column.getValueAt(p));
+                }
+                result.add(new Column(column.getLabel(), values));
+            }
+
+        return new DataFrame(result);
+    }
+
+    public Column loc(String label) {
         for (Column column : columns) {
             if (column.getLabel().equals(label)) {
+                return column;
+            }
+        }
+
+        return null;
+    }
+
+    public DataFrame loc(ArrayList<String> label) {
+        ArrayList<Column> result = new ArrayList<>();
+        for (Column column : columns) {
+            if (label.contains(column.getLabel())) {
                 result.add(column);
             }
         }
