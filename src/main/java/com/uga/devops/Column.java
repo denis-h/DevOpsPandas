@@ -165,4 +165,36 @@ public class Column {
         return result;
     }
 
+    public Object sum() {
+        Object result = null;
+        switch (this.getType()) {
+            case INT:
+            List<Integer> integers = new ArrayList<>(this.columnSize);
+            for (Object object : this.getValues()) {
+                integers.add((object == null ? 0 : (Integer)object));
+            }
+
+            int sumInt = 0;
+            for (Integer integer : integers) {
+                sumInt += integer;
+            }
+            result = sumInt;
+            break;
+            case FLOAT:
+            List<Float> floats = new ArrayList<>(this.columnSize);
+            for (Object object : this.getValues()) {
+                floats.add((object == null ? 0.0f : (Float)object));
+            }
+
+            float sumFloat = 0.0f;
+            for (Float f : floats) {
+                sumFloat += f;
+            }
+            result = sumFloat;
+            break;
+        }
+
+        return result;
+    }
+
 }
