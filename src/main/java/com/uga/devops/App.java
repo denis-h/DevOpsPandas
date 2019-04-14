@@ -57,12 +57,22 @@ public class App {
         System.out.println();
         frame3.affichage();
 
-        frame3 = frame2.loc("Model");
+        ArrayList<String> subFrame = new ArrayList<>();
+        subFrame.add("Year");
+        subFrame.add("Model");
+
+        frame3 = frame2.loc(subFrame);
+
+        ArrayList<Integer> subFrame2 = new ArrayList<>();
+        subFrame2.add(0);
+        subFrame2.add(3);
+
+        frame3 = frame.iloc(subFrame2);
 
         System.out.println();
         System.out.println();
         frame3.affichage();
 
-        System.out.println("Average : " + frame.loc("A").columns.get(0).average());
+        System.out.println("Average : " + frame.loc("A").average());
     }
 }
