@@ -1,19 +1,19 @@
 package com.uga.devops;
 
-import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
-public class DataFrame {
+class DataFrame {
 
     private ArrayList<Column> columns = new ArrayList<>();
 
-    public DataFrame(ArrayList<Column> data) {
+    DataFrame(ArrayList<Column> data) {
         columns = data;
     }
 
-    public DataFrame(String csv) {
+    DataFrame(String csv) {
         try {
             List<String> allLines = Files.readAllLines(Paths.get(csv));
             int index = 0;
@@ -21,7 +21,7 @@ public class DataFrame {
                 String[] separated = line.split(";");
                 if (index == 0) {
                     for (String s : separated) {
-                        Column column = new Column(s, new ArrayList<Object>());
+                        Column column = new Column(s, new ArrayList<>());
                         columns.add(column);
                     }
                 } else {
@@ -36,61 +36,46 @@ public class DataFrame {
         }
     }
 
-    public String affichage() {
+    ArrayList<Column> getColumns() {
+        return columns;
+    }
+
+    /**
+     * Returns all the DataFrame as a String (ready to be printed).
+     */
+    String print() {
         int maxLines = maxColumnLines();
+        return getColumns(maxLines);
+    }
+
+    /**
+     * Returns the beginning of a DataFrame as a String (ready to be printed).
+     *
+     * @param nb_lines to be printed.
+     */
+    String printBegin(int nb_lines) {
+        return getColumns(nb_lines);
+    }
+
+    private String getColumns(int nb_lines) {
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
         for (Column column : columns) {
             builder.append(column.getLabel()).append("\t");
         }
         builder.append("\n");
-        for (int i = 0; i < maxLines; i++) {
-            builder.append(i).append("\t");
-            for (int j = 0; j < columns.size(); j++) {
-                if (i < columns.get(j).getColumnSize()) {
-                    if (columns.get(j).getValueAt(i) == null) {
-                        builder.append(" \t");
-                    } else {
-                        builder.append(columns.get(j).getValueAt(i)).append("\t");
-                    }
-                } else {
-                    builder.append(" \t");
-                }
-            }
-            builder.append("\n");
+        for (int i = 0; i < nb_lines; i++) {
+            printLine(builder, i);
         }
         return builder.toString();
     }
 
-    public void affichageDebut(int nb_lines) {
-        int maxLines = maxColumnLines();
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("\t");
-        for (Column column : columns) {
-            builder.append(column.getLabel()).append("\t");
-        }
-        System.out.println(builder.toString());
-
-        for (int i = 0; i < nb_lines; i++) {
-            builder = new StringBuilder();
-            builder.append(i).append("\t");
-            for (int j = 0; j < columns.size(); j++) {
-                if (i < columns.get(j).getColumnSize()) {
-                    if (columns.get(j).getValueAt(i) == null) {
-                        builder.append(" \t");
-                    } else {
-                        builder.append(columns.get(j).getValueAt(i)).append("\t");
-                    }
-                } else {
-                    builder.append(" \t");
-                }
-            }
-            System.out.println(builder.toString());
-        }
-    }
-
-    public void affichageFin(int nb_lines) {
+    /**
+     * Returns the end of a DataFrame as a String (ready to be printed).
+     *
+     * @param nb_lines to be printed.
+     */
+    String printEnd(int nb_lines) {
         int maxLines = maxColumnLines();
         int startIndex = maxLines - nb_lines;
 
@@ -99,27 +84,30 @@ public class DataFrame {
         for (Column column : columns) {
             builder.append(column.getLabel()).append("\t");
         }
-        System.out.println(builder.toString());
-
+        builder.append("\n");
         for (int i = startIndex; i < maxLines; i++) {
-            builder = new StringBuilder();
-            builder.append(i).append("\t");
-            for (int j = 0; j < columns.size(); j++) {
-                if (i < columns.get(j).getColumnSize()) {
-                    if (columns.get(j).getValueAt(i) == null) {
-                        builder.append(" \t");
-                    } else {
-                        builder.append(columns.get(j).getValueAt(i)).append("\t");
-                    }
-                } else {
-                    builder.append(" \t");
-                }
-            }
-            System.out.println(builder.toString());
+            printLine(builder, i);
         }
+        return builder.toString();
     }
 
-    public DataFrame iloc(int pos) {
+    private void printLine(StringBuilder builder, int lineToPrint) {
+        builder.append(lineToPrint).append("\t");
+        for (Column column : columns) {
+            if (lineToPrint < column.getColumnSize()) {
+                if (column.getValueAt(lineToPrint) == null) {
+                    builder.append(" \t");
+                } else {
+                    builder.append(column.getValueAt(lineToPrint)).append("\t");
+                }
+            } else {
+                builder.append(" \t");
+            }
+        }
+        builder.append("\n");
+    }
+
+    DataFrame iloc(int pos) {
         ArrayList<Column> result = new ArrayList<>();
         for (Column column : columns) {
             ArrayList<Object> values = new ArrayList<>();
@@ -130,20 +118,24 @@ public class DataFrame {
         return new DataFrame(result);
     }
 
-    public DataFrame iloc(ArrayList<Integer> pos) {
+    DataFrame iloc(ArrayList<Integer> pos) {
         ArrayList<Column> result = new ArrayList<>();
-            for (Column column : columns) {
-                ArrayList<Object> values = new ArrayList<>();
-                for (Integer p : pos) {
-                    values.add(column.getValueAt(p));
-                }
-                result.add(new Column(column.getLabel(), values));
+        for (Column column : columns) {
+            ArrayList<Object> values = new ArrayList<>();
+            for (Integer p : pos) {
+                values.add(column.getValueAt(p));
             }
+            result.add(new Column(column.getLabel(), values));
+        }
 
         return new DataFrame(result);
     }
 
-    public Column loc(String label) {
+    /**
+     * @param label
+     * @return
+     */
+    Column loc(String label) {
         for (Column column : columns) {
             if (column.getLabel().equals(label)) {
                 return column;
@@ -153,7 +145,11 @@ public class DataFrame {
         return null;
     }
 
-    public DataFrame loc(ArrayList<String> label) {
+    /**
+     * @param label
+     * @return
+     */
+    DataFrame loc(ArrayList<String> label) {
         ArrayList<Column> result = new ArrayList<>();
         for (Column column : columns) {
             if (label.contains(column.getLabel())) {
@@ -164,7 +160,10 @@ public class DataFrame {
         return new DataFrame(result);
     }
 
-    private int maxColumnLines() {
+    /**
+     * @return
+     */
+    int maxColumnLines() {
         int maxLines = 0;
         for (Column column : columns) {
             int temp = column.getColumnSize();
@@ -173,9 +172,5 @@ public class DataFrame {
             }
         }
         return maxLines;
-    }
-
-    public ArrayList<Column> getColumns() {
-        return columns;
     }
 }

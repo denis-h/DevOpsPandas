@@ -10,8 +10,9 @@ public class AppTest extends TestCase {
         super(testName);
     }
 
+
     /************************************************************************
-     ****************** Column testing ********************************
+     ****************** DataFrame testing ********************************
      ***********************************************************************/
 
     public void testSumFloatCol() {
@@ -119,16 +120,6 @@ public class AppTest extends TestCase {
         assertEquals(2.68, roundedFloat);
     }
 
-    public void testAverageNullCol() {
-        ArrayList<Object> list = new ArrayList<>();
-        list.add(null);
-        list.add(null);
-        list.add(null);
-        Column column = new Column("NIL", list);
-        assertNull(column.min());
-        assertNull(column.max());
-    }
-
     public void testMinFloatCol() {
         ArrayList<Column> columns = new ArrayList<>();
         ArrayList<Object> list = new ArrayList<Object>();
@@ -146,6 +137,190 @@ public class AppTest extends TestCase {
         assertEquals(0.0f, df.loc("A").min());
     }
 
+    public void testDataFrameLocNull() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(0);
+        list1.add(1);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> columnAExpectedValues = columns.get(0).getValues();
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(0);
+        list2.add(1);
+        columns.add(new Column("B", list2));
+        ArrayList<Object> columnBExpectedValues = columns.get(1).getValues();
+        DataFrame dataFrame = new DataFrame(columns);
+        assertEquals(columnAExpectedValues, dataFrame.loc("A").getValues());
+        assertEquals(columnBExpectedValues, dataFrame.loc("B").getValues());
+        assertNull(dataFrame.loc("C"));
+    }
+
+    public void testDataFrameLocFromArray() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(0);
+        list1.add(1);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(0);
+        list2.add(1);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        // test if we select nothing
+        ArrayList<String> selectColumnsNone = new ArrayList<>();
+        DataFrame selectDataFrameNone = dataFrame.loc(selectColumnsNone);
+        assertEquals(0, selectDataFrameNone.getColumns().size());
+        // test if we select nothing existing
+        ArrayList<String> selectColumnsNoneExisting = new ArrayList<>();
+        selectColumnsNoneExisting.add("C");
+        selectColumnsNoneExisting.add("D");
+        DataFrame selectDataFrameNoneExisting = dataFrame.loc(selectColumnsNoneExisting);
+        assertEquals(0, selectDataFrameNoneExisting.getColumns().size());
+        // test if we select at least one existing column, let's say A (1 then)
+        ArrayList<String> selectColumnsAtLeastOne = new ArrayList<>();
+        selectColumnsAtLeastOne.add("A");
+        DataFrame selectDataFrameAtLeastOne = dataFrame.loc(selectColumnsAtLeastOne);
+        assertEquals(1, selectDataFrameAtLeastOne.getColumns().size());
+    }
+
+    public void testDataFrameMaxColumnsLines() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+        list1.add(4);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        assertEquals(4, dataFrame.maxColumnLines());
+    }
+
+    public void testDataFrameILocInt() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+        list1.add(4);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        // let's select second line (index = 1) (it should be [2,2])
+        DataFrame frameSecondLine = dataFrame.iloc(1);
+        assertEquals(2, frameSecondLine.getColumns().get(0).getValues().get(0));
+        assertEquals(2, frameSecondLine.getColumns().get(1).getValues().get(0));
+    }
+
+    public void testDataFrameILocArray() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+        list1.add(4);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        // let's select first and second line (index = 0 and 1) (it should be [1,1][2,2])
+        ArrayList<Integer> selectedLines = new ArrayList<>();
+        selectedLines.add(0);
+        selectedLines.add(1);
+        DataFrame frameSelectedLines = dataFrame.iloc(selectedLines);
+        assertEquals(1, frameSelectedLines.getColumns().get(0).getValues().get(0));
+        assertEquals(2, frameSelectedLines.getColumns().get(0).getValues().get(1));
+        assertEquals(1, frameSelectedLines.getColumns().get(1).getValues().get(0));
+        assertEquals(2, frameSelectedLines.getColumns().get(1).getValues().get(1));
+    }
+
+    public void testDataFrameConstructorStringCSV() {
+        DataFrame dataFrame = new DataFrame("test.csv");
+        assertEquals(4, dataFrame.getColumns().size());
+        assertEquals(2, dataFrame.maxColumnLines());
+    }
+
+    public void testDataFramePrint() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        String s = dataFrame.print();
+        String ss = "\tA\tB\t\n" +
+                "0\t1\t1\t\n" +
+                "1\t2\t2\t\n";
+        assertEquals(ss, s);
+    }
+
+    public void testDataFramePrintBegin() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        String s = dataFrame.printBegin(2);
+        String ss =
+                "\tA\tB\t\n" +
+                "0\t1\t1\t\n" +
+                "1\t2\t2\t\n";
+        assertEquals(ss, s);
+    }
+
+    public void testDataFramePrintEnd() {
+        ArrayList<Column> columns = new ArrayList<>();
+        ArrayList<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+        columns.add(new Column("A", list1));
+        ArrayList<Object> list2 = new ArrayList<>();
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+        columns.add(new Column("B", list2));
+        DataFrame dataFrame = new DataFrame(columns);
+        String s = dataFrame.printEnd(1);
+        String ss =
+                "\tA\tB\t\n" +
+                "2\t3\t3\t\n";
+        assertEquals(ss, s);
+    }
+
+    /************************************************************************
+     ****************** Column testing ********************************
+     ***********************************************************************/
+
+    public void testAverageNullCol() {
+        ArrayList<Object> list = new ArrayList<>();
+        list.add(null);
+        list.add(null);
+        list.add(null);
+        Column column = new Column("NIL", list);
+        assertNull(column.min());
+        assertNull(column.max());
+    }
 
     public void testMinIntCol() {
         ArrayList<Column> columns = new ArrayList<>();
