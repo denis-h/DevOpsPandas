@@ -38,23 +38,17 @@ public class App {
         columns.add(new Column("C", list3));
 
         DataFrame frame = new DataFrame(columns);
-        System.out.println();
-        System.out.println();
+
         System.out.println(frame.print());
         System.out.println();
-        System.out.println();
-        System.out.println();
+        System.out.println(frame.printBegin(3));
         System.out.println();
         System.out.println(frame.printEnd(3));
 
-
+        DataFrame frame2 = new DataFrame("./test.csv");
         System.out.println();
-        System.out.println();
-
-        DataFrame frame2 = new DataFrame("/home/dadmin/Documents/M1/S8/DevOps/DevOpsPandas/test.csv");
-        System.out.println();
-        System.out.println();
-        System.out.println(columns.get(1).getType());
+        System.out.println(frame2.print());
+        System.out.println(frame2.loc("Make").getType());
 
         DataFrame frame3 = frame2.iloc(1);
 
