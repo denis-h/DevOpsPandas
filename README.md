@@ -3,8 +3,8 @@
 
 ## Bibliothèque d'analyse de données en Java
 
-[![CircleCI](https://circleci.com/gh/bengous/DevOpsPandas.svg?style=svg&circle-token=a3cd0e39448c0872c08302ef0f31b070e7d62e69)](https://circleci.com/gh/bengous/DevOpsPandas)
-[![JaCoCo](target/site/jacoco/index.html)]
+[![CircleCI](https://circleci.com/gh/denis-h/DevOpsPandas.svg?style=svg&circle-token=a3cd0e39448c0872c08302ef0f31b070e7d62e69)](https://circleci.com/gh/denis-h/DevOpsPandas)
+
 
 ## Fonctionnalités fournies
 
