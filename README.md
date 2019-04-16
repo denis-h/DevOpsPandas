@@ -61,7 +61,9 @@ entièrement couvert.
 - [Docker Hub][dockerhub_link]
 Nous avons dockerisé notre projet en construisant une image de _docker_. Cette
 image est disponible sur [Docker Hub][image_link]. Nous l'avons aussi liée avec
-_CirleCI_
+_CirleCI_. Enfin nous avons mis en place la construction automatique de notre
+image qui se mettra à jour chaque fois quand nous faisons de `push` et les tests
+sur _CirleCI_ passent.
 - [Badges][badges_link]
 Le résultat de build par _CirleCI_ est lié avec _GitHub_
 Le résultat de la couverture de code est lié avec _Coveralls_. En executant
@@ -72,7 +74,10 @@ de jacoco sur _Coveralls_
 
 Le projet nous a permis de comprendre mieux les bonnes pratiques de _DevOps_.
 Nous avons découvert beaucoup d'outils différents qui nous permettent d'avoir
-une procédure d'intégration continue de notre projet.
+une procédure d'intégration continue de notre projet. La liaison et la mise en
+place de ces outils nous pris du temps mais malgré les difficultés rencnontrées,
+nous avons réussi de les réaliser. En conclusion nous pouvons dire que le projet
+nous a apporté des compétences importantes liées au développement logiciel.
 
 
 [github_link]: https://github.com/
