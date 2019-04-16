@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class AppTest extends TestCase {
 
+    enum Type {NULL, INT, FLOAT, STRING, EMPTY}
+
     public AppTest(String testName) {
         super(testName);
     }
@@ -421,6 +423,31 @@ public class AppTest extends TestCase {
         assertEquals(5.0f, new Column("A", list).average());
     }
 
+    public void testcalculateMaxLengthColEmpty() {
+        ArrayList<Object> list = new ArrayList<>();
+
+        Column col = new Column("A", list);
+
+        assertEquals(0, col.calculateMaxLength());
+    }
+
+    public void testcalculateMaxLengthColFloat() {
+        ArrayList<Object> list = new ArrayList<>();
+        list.add(9.1f);
+        list.add(8.421f);
+        Column col = new Column("A", list);
+
+        assertEquals(5, col.calculateMaxLength());
+    }
+
+    public void testcalculateMaxLengthColString() {
+        ArrayList<Object> list = new ArrayList<>();
+        list.add("toto");
+        list.add("devops");
+        Column col = new Column("A", list);
+
+        assertEquals(6, col.calculateMaxLength());
+    }
     /************************************************************************
      ****************** DataFrame testing ********************************
      ***********************************************************************/
