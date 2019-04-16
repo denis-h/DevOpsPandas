@@ -12,6 +12,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -78,6 +79,22 @@
                     <excludes>
                         <exclude>**/App.*</exclude>
                     </excludes>
+                    <limits>
+                        <limit>
+                            <counter>INSTRUCTION</counter>
+                            <value>COVEREDRATIO</value>
+                            <minimum>70%</minimum>
+                        </limit>
+                    </limits>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+                <configuration>
+                    <repoToken>qv2Q1wt1N8ZdAIbRkZPdt02Ub6cto2tSE</repoToken>
                 </configuration>
             </plugin>
         </plugins>

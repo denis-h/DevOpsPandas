@@ -1,17 +1,19 @@
 # DevOpsPandas
 
-
 ## Bibliothèque d'analyse de données en Java
 
 [![CircleCI](https://circleci.com/gh/denis-h/DevOpsPandas.svg?style=svg&circle-token=a3cd0e39448c0872c08302ef0f31b070e7d62e69)](https://circleci.com/gh/denis-h/DevOpsPandas)
-[![Coverage Status](https://coveralls.io/repos/github/denis-h/DevOpsPandas/badge.svg)](https://coveralls.io/github/denis-h/DevOpsPandas)
-
+[![Coverage Status](https://coveralls.io/repos/github/denis-h/DevOpsPandas/badge.svg?branch=dev)](https://coveralls.io/github/denis-h/DevOpsPandas?branch=dev)
 
 ## Fonctionnalités fournies
 
 * Création d'un _dataframe_
     * `DataFrame(ArrayList<Column> data)` où `data` est un ensemble de colonnes
-    * `DataFrame(String csv)` où `csv` est un nom de fichier qui est parsé
+    * `DataFrame(String csv)` où `csv` est un nom de fichier qui est parsé.
+    Lorsque qu'un fichier est parsé et une colonne créée, on extrait le type
+    (int, float ou string) associé à cette colonne.
+    NB: pour les colonnes avec des float il faut que le format soit 0.xxxx et non
+    0,xxxx sinon le parseur ne va pas bien extraire le type de donnée (float).
 
 * Affichage d'un _dataframe_
     * `String print()` affiche tout le dataframe
@@ -39,7 +41,7 @@ Maven nous a permis de construire notre projet et de gérer facilement les
 dépendances. En ajoutant différents `plugins` nous pouvons :
     - compiler notre projet `mvn compile`
     - executer le programme `mvn exec:java`
-    - lancer les tests `mvn test`        
+    - lancer les tests `mvn test`
 - [Junit][junit_link]
 Nous avons écris des tests unitaires afin de vérifier le bon fonctionnement de
 notre bibliothèque
@@ -52,17 +54,25 @@ _CirleCI_ avec notre depot de _GitHub_ et notre image sur _Docker Hub_.
 La couverture de code est mésurée par _JaCoCo_. Le rapport est généré par
 _maven_ en lancant la commande `mvn test` et il se trouve dans
 `target/site/jacoco/index.html`.
+- [Coveralls][coveralls_link]
+Coveralls est un service Web destiné à nous aider à suivre notre couverture
+de code au fil du temps et à nous assurer que tout notre nouveau code est
+entièrement couvert.
 - [Docker Hub][dockerhub_link]
 Nous avons dockerisé notre projet en construisant une image de _docker_. Cette
 image est disponible sur [Docker Hub][image_link]. Nous l'avons aussi liée avec
 _CirleCI_
 - [Badges][badges_link]
 Le résultat de build par _CirleCI_ est lié avec _GitHub_
+Le résultat de la couverture de code est lié avec _Coveralls_. En executant
+la commande `mvn clean test jacoco:report coveralls:report` on push le rapport
+de jacoco sur _Coveralls_
 
 ## Feedback
 
 Le projet nous a permis de comprendre mieux les bonnes pratiques de _DevOps_.
-
+Nous avons découvert beaucoup d'outils différents qui nous permettent d'avoir
+une procédure d'intégration continue de notre projet.
 
 
 [github_link]: https://github.com/
@@ -70,6 +80,7 @@ Le projet nous a permis de comprendre mieux les bonnes pratiques de _DevOps_.
 [junit_link]: https://junit.org/junit5/
 [circleci_link]: https://circleci.com/
 [jacoco_link]: https://www.eclemma.org/jacoco/
+[coveralls_link]: https://coveralls.io/
 [dockerhub_link]: https://hub.docker.com/
 [badges_link]: https://github.com/badges/
 [image_link]: https://hub.docker.com/r/denishod/devopspandas
