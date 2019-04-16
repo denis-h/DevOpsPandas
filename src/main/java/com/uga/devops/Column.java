@@ -1,11 +1,10 @@
 package com.uga.devops;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.lang.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Column {
 
@@ -16,18 +15,6 @@ public class Column {
     private int columnSize;
     private Type type;
 
-    public Column() {
-
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public void setValues(ArrayList<Object> values) {
-        this.values = values;
-    }
-
     public Column(String label, ArrayList<Object> values) {
         this.label = label;
         this.values = values;
@@ -35,23 +22,71 @@ public class Column {
         this.type = extractType(values);
     }
 
-    public String getLabel() {
+    /**
+     * Returns the max length (size in characters) of the column.
+     */
+    int calculateMaxLength() {
+        int max = 0;
+        for (Object object : values) {
+            switch (type) {
+                case NULL:
+                case EMPTY:
+                    break;
+                case INT:
+                    Integer i = (Integer) object;
+                    int ci = 0;
+                    if (i != null) {
+                        ci = i.toString().length();
+                    }
+                    if (ci > max) {
+                        max = ci;
+                    }
+                    break;
+                case FLOAT:
+                    Float f = (Float) object;
+                    int cf = 0;
+                    if (f != null) {
+                        cf = f.toString().length();
+                    }
+                    if (cf > max) {
+                        max = cf;
+                    }
+                    break;
+                case STRING:
+                    String s = (String) object;
+                    int cs = 0;
+                    if (s != null) {
+                        cs = s.length();
+                    }
+                    if (cs > max) {
+                        max = cs;
+                    }
+                    break;
+            }
+        }
+        return max;
+    }
+
+    String getLabel() {
         return label;
     }
 
-    public ArrayList<Object> getValues() {
+    ArrayList<Object> getValues() {
         return values;
     }
 
-    public Object getValueAt(int index) {
+    Object getValueAt(int index) {
         return values.get(index);
     }
 
-    public Type getType() {
+    private Type getType() {
         return type;
     }
 
-    public Type extractType(ArrayList<Object> values) {
+    /**
+     * Basic type extractor (not used by CSV)
+     */
+    private Type extractType(ArrayList<Object> values) {
         if (values != null) {
             if (values.size() >= 1) {
                 if (values.get(0) instanceof Integer) {
@@ -68,50 +103,69 @@ public class Column {
         return Type.NULL;
     }
 
-    public void replaceAt(int index, Object value) {
+    /**
+     * Replace a value at a given index.
+     */
+    void replaceAt(int index, Object value) {
         values.remove(index);
         values.add(index, value);
     }
 
-    public void add(Object value) {
+    /**
+     * Adds a value to the column. If from CSV then the first time we add a value the column values will be empty so
+     * we can extract the type from that String value. Then all the column value will be filled with the right type.
+     *
+     * @param value   the given value
+     * @param fromCSV true if from CSV
+     */
+    public void add(Object value, boolean fromCSV) {
         if (values.isEmpty()) { // we insert into a column where values are empty still, so we have to change
-            this.type = extractType(value);
+            this.type = extractType(value, fromCSV);
         }
-        values.add(value);
+        if (fromCSV) {
+            String sValue = (String) value;
+            switch (type) {
+                case NULL:
+                case EMPTY:
+                    values.add(value);
+                    break;
+                case INT:
+                    values.add(Integer.parseInt(sValue));
+                    break;
+                case FLOAT:
+                    values.add(Float.parseFloat(sValue));
+                    break;
+                case STRING:
+                    values.add(sValue);
+                    break;
+            }
+        } else
+            values.add(value);
         columnSize++;
     }
 
-    private Type extractType(Object value) {
+    /**
+     * Extracts the type of a column. If the column was created from CSV we have to extract the type
+     * of the String first (because csv is parsed in String)
+     *
+     * @param value   the given value
+     * @param fromCSV true if from CSV
+     * @return the type
+     */
+    private Type extractType(Object value, boolean fromCSV) {
         if (value instanceof Integer) {
             return Type.INT;
         } else if (value instanceof String) {
-//            Integer.decode()
-            // the string may be an int or float if csv
-//            final String sValue = (String) value;
-//            boolean isAnInt = false;
-//            boolean isAFloat = true;
-//            try {
-//                int i = Integer.parseInt(sValue);
-//                return Type.INT;
-////                if (possibleInt instanceof Integer) {
-////                    return Type.INT;
-////                } else if (possibleInt instanceof NumberFormatException) {
-////                    return Type.STRING;
-////                }
-//                if (isAnInt) return Type.INT;
-//                else {
-//                    Float.parseFloat(sValue);
-//                    isAFloat = true;
-//                }
-////                if (possibleFloat instanceof Float) {
-////                    return Type.FLOAT;
-////                } else if (possibleFloat instanceof NumberFormatException) {
-////                    return Type.STRING;
-////                }
-//                if (isAFloat) return Type.FLOAT;
-//            } catch (NumberFormatException e) {
-//                // not an int
-//            }
+            if (fromCSV) {
+                String sValue = (String) value;
+
+                if (Pattern.matches("^\\d+$", sValue)) {
+                    return Type.INT;
+                }
+                if (Pattern.matches("^[-+]?[0-9]*\\.?[0-9]+$", sValue)) {
+                    return Type.FLOAT;
+                }
+            }
             return Type.STRING;
         } else if (value instanceof Float) {
             return Type.FLOAT;
@@ -121,34 +175,27 @@ public class Column {
         return Type.NULL;
     }
 
-//    public static Object stringToDataType(String valueAsString) throws ParseException {
-//        // detections ordered by probability of occurrence in Buffer_Bank.
-//        String decimalPattern = detectDecimal(valueAsString);
-//        if (decimalPattern != null) {
-//            return stringToBigDecimal(valueAsString, decimalPattern);
-//        }
-//        String integerPattern = detectInteger(valueAsString);
-//        if (integerPattern != null) {
-//            return stringToBigInteger(valueAsString);
-//        }
-//        String datePattern = detectDate(valueAsString);
-//        if (datePattern != null) {
-//            return stringToDate(valueAsString, datePattern);
-//        }
-//        return valueAsString;
-//    }
-
-    public void remove(Object value) {
+    /**
+     * Removes a given Object.
+     */
+    void remove(Object value) {
         values.remove(value);
         columnSize--;
     }
 
-    public int getColumnSize() {
+    /**
+     * Column size (height)
+     */
+    int getColumnSize() {
         return columnSize;
     }
 
-    public Object max() {
-        Object result = null;
+    /**
+     * Returns the max value of the column.
+     * Return value depends on the type.
+     */
+    Object max() {
+        Object result;
         switch (this.getType()) {
             case INT:
                 List<Integer> integers = new ArrayList<>(this.columnSize);
@@ -174,11 +221,14 @@ public class Column {
             default:
                 result = null;
         }
-
         return result;
     }
 
-    public Object min() {
+    /**
+     * Returns the min value of the column.
+     * Return value depends on the type.
+     */
+    Object min() {
         Object result;
         switch (this.getType()) {
             case INT:
@@ -208,7 +258,46 @@ public class Column {
         return result;
     }
 
-    public Object average() {
+
+    /**
+     * Returns the sum value of the column.
+     * Return value depends on the type.
+     */
+    Object sum() {
+        Object result = null;
+        switch (this.getType()) {
+            case INT:
+                List<Integer> integers = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    integers.add((object == null ? 0 : (Integer) object));
+                }
+                int sumInt = 0;
+                for (Integer integer : integers) {
+                    sumInt += integer;
+                }
+                result = sumInt;
+                break;
+            case FLOAT:
+                List<Float> floats = new ArrayList<>(this.columnSize);
+                for (Object object : this.getValues()) {
+                    floats.add((object == null ? 0.0f : (Float) object));
+                }
+
+                float sumFloat = 0.0f;
+                for (Float f : floats) {
+                    sumFloat += f;
+                }
+                result = sumFloat;
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the average value of the column.
+     * Return value depends on the type.
+     */
+    Object average() {
         float result = 0.0f;
         switch (this.getType()) {
             case INT:
@@ -236,40 +325,6 @@ public class Column {
                 result = result / this.columnSize;
                 break;
         }
-
         return result;
     }
-
-    public Object sum() {
-        Object result = null;
-        switch (this.getType()) {
-            case INT:
-                List<Integer> integers = new ArrayList<>(this.columnSize);
-                for (Object object : this.getValues()) {
-                    integers.add((object == null ? 0 : (Integer) object));
-                }
-
-                int sumInt = 0;
-                for (Integer integer : integers) {
-                    sumInt += integer;
-                }
-                result = sumInt;
-                break;
-            case FLOAT:
-                List<Float> floats = new ArrayList<>(this.columnSize);
-                for (Object object : this.getValues()) {
-                    floats.add((object == null ? 0.0f : (Float) object));
-                }
-
-                float sumFloat = 0.0f;
-                for (Float f : floats) {
-                    sumFloat += f;
-                }
-                result = sumFloat;
-                break;
-        }
-
-        return result;
-    }
-
 }

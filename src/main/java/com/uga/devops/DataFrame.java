@@ -13,6 +13,11 @@ class DataFrame {
         columns = data;
     }
 
+    /**
+     * Create a DataFrame object from a parsed csv file.
+     *
+     * @param csv the given csv
+     */
     DataFrame(String csv) {
         try {
             List<String> allLines = Files.readAllLines(Paths.get(csv));
@@ -26,7 +31,7 @@ class DataFrame {
                     }
                 } else {
                     for (int i = 0; i < separated.length; i++) {
-                        columns.get(i).add(separated[i]);
+                        columns.get(i).add(separated[i], true);
                     }
                 }
                 index++;
@@ -61,7 +66,14 @@ class DataFrame {
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
         for (Column column : columns) {
-            builder.append(column.getLabel()).append("\t");
+            int columnSize = column.calculateMaxLength();
+            StringBuilder columnLabel = new StringBuilder(column.getLabel());
+            int toAdd = columnSize - columnLabel.toString().length();
+            for (int i = 0; i < toAdd; i++) {
+                columnLabel.append(" ");
+            }
+            columnLabel.append("\t");
+            builder.append(columnLabel.toString());
         }
         builder.append("\n");
         for (int i = 0; i < nb_lines; i++) {
@@ -82,7 +94,14 @@ class DataFrame {
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
         for (Column column : columns) {
-            builder.append(column.getLabel()).append("\t");
+            int columnSizeLength = column.calculateMaxLength();
+            StringBuilder columnValue = new StringBuilder(column.getLabel());
+            int toAdd = columnSizeLength - columnValue.toString().length();
+            for (int i = 0; i < toAdd; i++) {
+                columnValue.append(" ");
+            }
+            columnValue.append("\t");
+            builder.append(columnValue.toString());
         }
         builder.append("\n");
         for (int i = startIndex; i < maxLines; i++) {
@@ -91,14 +110,30 @@ class DataFrame {
         return builder.toString();
     }
 
+    /**
+     * Print a line
+     *
+     * @param builder     the string builder to append to
+     * @param lineToPrint the index of the line
+     */
     private void printLine(StringBuilder builder, int lineToPrint) {
         builder.append(lineToPrint).append("\t");
         for (Column column : columns) {
+            int columnSizeLength = column.calculateMaxLength();
             if (lineToPrint < column.getColumnSize()) {
                 if (column.getValueAt(lineToPrint) == null) {
-                    builder.append(" \t");
+                    for (int i = 0; i < columnSizeLength; i++) {
+                        builder.append(" ");
+                    }
+                    builder.append("\t");
                 } else {
-                    builder.append(column.getValueAt(lineToPrint)).append("\t");
+                    StringBuilder columnValue = new StringBuilder(column.getValueAt(lineToPrint).toString());
+                    int toAdd = columnSizeLength - columnValue.toString().length();
+                    for (int i = 0; i < toAdd; i++) {
+                        columnValue.append(" ");
+                    }
+                    columnValue.append("\t");
+                    builder.append(columnValue.toString());
                 }
             } else {
                 builder.append(" \t");
@@ -107,6 +142,9 @@ class DataFrame {
         builder.append("\n");
     }
 
+    /**
+     * Returns a sub DataFrame (a line).
+     */
     DataFrame iloc(int pos) {
         ArrayList<Column> result = new ArrayList<>();
         for (Column column : columns) {
@@ -114,10 +152,12 @@ class DataFrame {
             values.add(column.getValueAt(pos));
             result.add(new Column(column.getLabel(), values));
         }
-
         return new DataFrame(result);
     }
 
+    /**
+     * Returns a sub DataFrame (from multiple lines).
+     */
     DataFrame iloc(ArrayList<Integer> pos) {
         ArrayList<Column> result = new ArrayList<>();
         for (Column column : columns) {
@@ -127,13 +167,11 @@ class DataFrame {
             }
             result.add(new Column(column.getLabel(), values));
         }
-
         return new DataFrame(result);
     }
 
     /**
-     * @param label
-     * @return
+     * Return a column from a given label.
      */
     Column loc(String label) {
         for (Column column : columns) {
@@ -141,13 +179,11 @@ class DataFrame {
                 return column;
             }
         }
-
         return null;
     }
 
     /**
-     * @param label
-     * @return
+     * Return columns from given labels.
      */
     DataFrame loc(ArrayList<String> label) {
         ArrayList<Column> result = new ArrayList<>();
@@ -156,12 +192,11 @@ class DataFrame {
                 result.add(column);
             }
         }
-
         return new DataFrame(result);
     }
 
     /**
-     * @return
+     * Returns the max column lines (heigth of the sheet).
      */
     int maxColumnLines() {
         int maxLines = 0;

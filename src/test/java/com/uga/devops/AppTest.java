@@ -396,7 +396,7 @@ public class AppTest extends TestCase {
     public void testColumnAdd() {
         ArrayList<Object> list = new ArrayList<>();
         Column column = new Column("AA", list);
-        column.add("a random value");
+        column.add("a random value", true);
         assertEquals(1, column.getColumnSize());
     }
 
@@ -425,27 +425,6 @@ public class AppTest extends TestCase {
      ****************** DataFrame testing ********************************
      ***********************************************************************/
 
-//    public void testDataFramePrintOutput(){
-//        ArrayList<Column> columns = new ArrayList<>();
-//        ArrayList<Object> list = new ArrayList<>();
-//        list.add(1.4f);
-//        list.add(2.7f);
-//        list.add(null);
-//        list.add(4.2f);
-//        list.add(5.1f);
-//        columns.add(new Column("A", list));
-//        DataFrame df = new DataFrame(columns);
-//        String printDataFrameOutput = df.affichage();
-//        System.out.println(printDataFrameOutput);
-//        String expectedOutput =
-//                "\tA\tB\tC\t\n" +
-//                "0\t1.4\ta\t1\t\n" +
-//                "1\t2.7\tb\t2\t\n" +
-//                "2\t \tnull\t \t\n" +
-//                "3\t4.2\tdd\t4\t\n" +
-//                "4\t5.1\te\t5";
-//        assertEquals(expectedOutput, printDataFrameOutput);
-//    }
     public void testDataFrameConstructorFromArrayListOfColumns() {
         ArrayList<Column> columns = new ArrayList<>();
         ArrayList<Object> list = new ArrayList<>();
@@ -457,9 +436,4 @@ public class AppTest extends TestCase {
         DataFrame df = new DataFrame(columns);
         assertEquals(columns, df.getColumns());
     }
-//
-//    public void constructorTest(){
-//        c = new Calculator(4, 5);
-//        assertThat(9, is(c.sum()));
-//    }
 }
