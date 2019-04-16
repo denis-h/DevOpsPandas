@@ -6,7 +6,6 @@ public class App {
 
     public static void main(String[] args) {
         ArrayList<Column> columns = new ArrayList<>();
-
         ArrayList<Object> list = new ArrayList<>();
         list.add(1.4f);
         list.add(2.7f);
@@ -14,7 +13,6 @@ public class App {
         list.add(4.2f);
         list.add(5.1f);
         columns.add(new Column("A", list));
-
         ArrayList<Object> list2 = new ArrayList<>();
         list2.add("a");
         list2.add("b");
@@ -22,7 +20,6 @@ public class App {
         list2.add("dd");
         list2.add("e");
         columns.add(new Column("B", list2));
-
         ArrayList<Object> list3 = new ArrayList<>();
         list3.add(1);
         list3.add(2);
@@ -30,8 +27,6 @@ public class App {
         list3.add(4);
         list3.add(5);
         columns.add(new Column("C", list3));
-
-
         DataFrame frame = new DataFrame(columns);
         System.out.println();
         System.out.println();
@@ -65,5 +60,11 @@ public class App {
         System.out.println();
         System.out.println();
         System.out.println();
+        System.out.println("Min value of first column");
+        System.out.println(dataFrameCSV.getColumns().get(0).min());
+        System.out.println("Max value of first column");
+        System.out.println(dataFrameCSV.getColumns().get(0).max());
+        System.out.println("Average value of first column");
+        System.out.println(dataFrameCSV.getColumns().get(0).average());
     }
 }
